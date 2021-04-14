@@ -31,9 +31,8 @@ namespace StickyPic
 
         private void OpenImage(Image image, ImageSource bitmap)
         {
-            image.Source = bitmap; //Open the first object in the array
+            image.Source = bitmap; //Set the image source to the bitmap
             imageAspectRatio = bitmap.Height / bitmap.Width; //Calculate aspect ratio
-            this.Width = 480f;
             this.Height = (this.Width * imageAspectRatio); //Set window size according to aspect ratio
             this.MinWidth = 100f; //Make minimum size smaller
         }
@@ -91,9 +90,13 @@ namespace StickyPic
         private void bFromClipboard_Click(object sender, RoutedEventArgs e)
         {
             if (Clipboard.ContainsImage())
+            { 
                 OpenImage(imageMain, Clipboard.GetImage()); //Get the image from the Clipboard and open it
-            bBack.Visibility = Visibility.Visible; //Show back button
-            canvasHome.Visibility = Visibility.Hidden; //Hide the home screen elements
+                bBack.Visibility = Visibility.Visible; //Show back button
+                canvasHome.Visibility = Visibility.Hidden; //Hide the home screen elements
+            }
+            else
+                MessageBox.Show("Nothing in Clipboard!", "Clipboard Empty", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private void cboxShowUI_Click(object sender, RoutedEventArgs e)
