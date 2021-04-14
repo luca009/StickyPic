@@ -60,6 +60,7 @@ namespace StickyPic
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             this.Height = (this.Width * imageAspectRatio) + 6f; //Set window size according to aspect ratio
+            this.MinHeight = this.Height; //Avoid glitching
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
