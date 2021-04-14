@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StickyPic"
         mc:Ignorable="d"
-        Title="Sticky Picture" Height="270" Width="480" Topmost="True" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" SizeChanged="Window_SizeChanged" MinWidth="320" MouseDown="Window_MouseDown">
+        Title="Sticky Picture" Height="270" Width="480" Topmost="True" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" SizeChanged="Window_SizeChanged" MinWidth="320" MouseDown="Window_MouseDown" AllowsTransparency="True" ResizeMode="CanResizeWithGrip" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave">
     <Grid Background="#FF2C2C2C">
         <Canvas x:Name="canvasHome" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="50">
             <Grid>
@@ -19,6 +19,7 @@
             <Image.ContextMenu>
                 <ContextMenu>
                     <CheckBox x:Name="cboxShowUI" Content="Show UI" IsChecked="True" Click="cboxShowUI_Click"/>
+                    <CheckBox x:Name="cboxEnableTransparency" Content="Make window transparent" Click="cboxEnableTransparency_Click"/>
                 </ContextMenu>
             </Image.ContextMenu>
         </Image>

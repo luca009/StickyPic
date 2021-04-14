@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -21,6 +22,7 @@ namespace StickyPic
     public partial class MainWindow : Window
     {
         double imageAspectRatio = 0.5625f;
+        bool windowTransparencyEnabled = false;
 
         public MainWindow()
         {
@@ -110,6 +112,25 @@ namespace StickyPic
                 bClose.Visibility = Visibility.Hidden;
                 bMinimize.Visibility = Visibility.Hidden;
             }
+        }
+
+        private void cboxEnableTransparency_Click(object sender, RoutedEventArgs e)
+        {
+            windowTransparencyEnabled = (bool)cboxEnableTransparency.IsChecked;
+            if (!windowTransparencyEnabled)
+                this.BeginAnimation(OpacityProperty, new DoubleAnimation(1f, new Duration(TimeSpan.FromSeconds(0.25f))));
+        }
+
+        private void Window_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (windowTransparencyEnabled)
+                this.BeginAnimation(OpacityProperty, new DoubleAnimation(1f, new Duration(TimeSpan.FromSeconds(0.25f)))); //Make window opaque
+        }
+
+        private void Window_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (windowTransparencyEnabled)
+                this.BeginAnimation(OpacityProperty, new DoubleAnimation(0.3f, new Duration(TimeSpan.FromSeconds(1f)))); //Make window transparent
         }
     }
 }
