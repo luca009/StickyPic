@@ -33,6 +33,7 @@ namespace StickyPic
         {
             image.Source = bitmap; //Set the image source to the bitmap
             imageAspectRatio = bitmap.Height / bitmap.Width; //Calculate aspect ratio
+            this.MinHeight = this.Height;
             this.Height = (this.Width * imageAspectRatio); //Set window size according to aspect ratio
             this.MinWidth = 100f; //Make minimum size smaller
         }
