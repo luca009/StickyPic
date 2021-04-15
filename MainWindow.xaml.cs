@@ -27,15 +27,37 @@ namespace StickyPic
         public MainWindow()
         {
             InitializeComponent();
+            string[] arguments = GetArguments();
+            if (arguments.Length > 1)
+            {
+                if (File.Exists(arguments[1]))
+                {
+                    var uri = new Uri(arguments[1]);
+                    var bitmap = new BitmapImage(uri);
+                    OpenImage(imageMain, bitmap);
+                }
+            }
+        }
+
+        private string[] GetArguments()
+        {
+            string[] arguments = null;
+            arguments = Environment.GetCommandLineArgs(); //Load command line arguments into array
+            if (arguments != null)
+                return arguments;
+            else
+                return null;
         }
 
         private void OpenImage(Image image, ImageSource bitmap)
         {
             image.Source = bitmap; //Set the image source to the bitmap
             imageAspectRatio = bitmap.Height / bitmap.Width; //Calculate aspect ratio
-            this.MinHeight = this.Height;
             this.Height = (this.Width * imageAspectRatio); //Set window size according to aspect ratio
+            this.MinHeight = this.Height;
             this.MinWidth = 100f; //Make minimum size smaller
+            bBack.Visibility = Visibility.Visible; //Show back button
+            canvasHome.Visibility = Visibility.Hidden; //Hide the home screen elements
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -48,8 +70,6 @@ namespace StickyPic
                     var uri = new Uri(files[0]);
                     var bitmap = new BitmapImage(uri);
                     OpenImage(imageMain, bitmap); //Open the image
-                    bBack.Visibility = Visibility.Visible; //Show back button
-                    canvasHome.Visibility = Visibility.Hidden; //Hide the home screen elements
                 }
                 catch (Exception ex)
                 {
@@ -62,6 +82,8 @@ namespace StickyPic
         {
             this.Height = (this.Width * imageAspectRatio) + 6f; //Set window size according to aspect ratio
             this.MinHeight = this.Height; //Avoid glitching
+            if (this.WindowState == WindowState.Maximized)
+                this.WindowState = WindowState.Normal; //Prevent maximizing
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -92,11 +114,7 @@ namespace StickyPic
         private void bFromClipboard_Click(object sender, RoutedEventArgs e)
         {
             if (Clipboard.ContainsImage())
-            { 
                 OpenImage(imageMain, Clipboard.GetImage()); //Get the image from the Clipboard and open it
-                bBack.Visibility = Visibility.Visible; //Show back button
-                canvasHome.Visibility = Visibility.Hidden; //Hide the home screen elements
-            }
             else
                 MessageBox.Show("Nothing in Clipboard!", "Clipboard Empty", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
