@@ -13,6 +13,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using IWshRuntimeLibrary;
+using File = System.IO.File;
 
 namespace StickyPic
 {
@@ -23,10 +26,26 @@ namespace StickyPic
     {
         double imageAspectRatio = 0.5625f;
         bool windowTransparencyEnabled = false;
+        DispatcherTimer pollTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(0.5) };
+        double previousImageSeed = 0;
 
         public MainWindow()
         {
+            if (Clipboard.ContainsImage())
+            {
+                BitmapSource bitmap = Clipboard.GetImage();
+                previousImageSeed = bitmap.Height * bitmap.Width;
+            }
+
+            pollTimer.Tick += pollTimer_Tick;
+            pollTimer.Start();
+
             InitializeComponent();
+
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk"))
+                cboxPinSuggestions.IsChecked = true;
+            this.MaxHeight = System.Windows.SystemParameters.PrimaryScreenHeight - 50;
+
             string[] arguments = GetArguments();
             if (arguments.Length > 1)
             {
@@ -35,6 +54,28 @@ namespace StickyPic
                     var uri = new Uri(arguments[1]);
                     var bitmap = new BitmapImage(uri);
                     OpenImage(imageMain, bitmap);
+                }
+                else if (arguments[1] == "--launch-hidden")
+                {
+                    this.Visibility = Visibility.Hidden;
+                }
+            }
+        }
+
+        private void pollTimer_Tick(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsImage())
+            {
+                BitmapSource image = Clipboard.GetImage();
+                if (image.Width * image.Height != previousImageSeed) //Super hacky way to detect clipboard changes
+                {
+                    previousImageSeed = image.Width * image.Height;
+                    PinSuggestion pinSuggestion = new PinSuggestion();
+                    if (pinSuggestion.ShowDialog() == true)
+                    {
+                        OpenImage(imageMain, Clipboard.GetImage());
+                        this.Show();
+                    }
                 }
             }
         }
@@ -53,11 +94,11 @@ namespace StickyPic
         {
             image.Source = bitmap; //Set the image source to the bitmap
             imageAspectRatio = bitmap.Height / bitmap.Width; //Calculate aspect ratio
-            this.Height = (this.Width * imageAspectRatio); //Set window size according to aspect ratio
-            this.MinHeight = this.Height;
+            this.MinHeight = (this.Width * imageAspectRatio);
+            this.Height = this.MinHeight; //Set window size according to aspect ratio
             this.MinWidth = 100f; //Make minimum size smaller
             bBack.Visibility = Visibility.Visible; //Show back button
-            canvasHome.Visibility = Visibility.Hidden; //Hide the home screen elements
+            gridHome.Visibility = Visibility.Hidden; //Hide the home screen elements
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -108,7 +149,7 @@ namespace StickyPic
             imageMain.Source = null;
             this.MinWidth = 320f; //Reset minimum size
             bBack.Visibility = Visibility.Hidden; //Hide button
-            canvasHome.Visibility = Visibility.Visible; //Show the home screen elements
+            gridHome.Visibility = Visibility.Visible; //Show the home screen elements
         }
 
         private void bFromClipboard_Click(object sender, RoutedEventArgs e)
@@ -154,6 +195,26 @@ namespace StickyPic
         {
             if (windowTransparencyEnabled)
                 this.BeginAnimation(OpacityProperty, new DoubleAnimation(0.3f, new Duration(TimeSpan.FromSeconds(1f)))); //Make window transparent
+        }
+
+        private void cboxPinSuggestions_Click(object sender, RoutedEventArgs e)
+        {
+            if (cboxPinSuggestions.IsChecked == true)
+            {
+                WshShell shell = new WshShell();
+                string shortcutAddress = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk";
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutAddress);
+                shortcut.Description = "Starts StickyPic without UI";
+                shortcut.TargetPath = System.Reflection.Assembly.GetEntryAssembly().Location;
+                shortcut.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                shortcut.Arguments = "--launch-hidden";
+                shortcut.Save();
+            }
+            else
+            {
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk"))
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk");
+            }
         }
     }
 }

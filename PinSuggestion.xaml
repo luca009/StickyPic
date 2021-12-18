@@ -1,0 +1,78 @@
+﻿<Window x:Class="StickyPic.PinSuggestion"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StickyPic"
+        mc:Ignorable="d"
+        Title="PinSuggestion" Height="50" Width="190" WindowStyle="None" ResizeMode="NoResize" Opacity="0.9" AllowsTransparency="True" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Topmost="True">
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#272727"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontFamily" Value="Segoe UI Semilight"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="#4B4B4B" BorderThickness="1">
+                            <Border BorderThickness="{TemplateBinding Padding}">
+                                <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Button.MouseEnter">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Control.Background).(SolidColorBrush.Color)"
+                                            To="Gray" Duration="0:0:0.25">
+                                    <ColorAnimation.EasingFunction>
+                                        <CircleEase EasingMode="EaseOut"/>
+                                    </ColorAnimation.EasingFunction>
+                                </ColorAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+
+                <EventTrigger RoutedEvent="Button.MouseLeave">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Control.Background).(SolidColorBrush.Color)"
+                                            To="#272727" Duration="0:0:0.5">
+                                    <ColorAnimation.EasingFunction>
+                                        <QuinticEase EasingMode="EaseOut"/>
+                                    </ColorAnimation.EasingFunction>
+                                </ColorAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Button x:Name="bPin" HorizontalAlignment="Stretch" Click="bPin_Click">
+            <Button.Content>
+                <Grid Width="130">
+                    <Image Source="icon.png" HorizontalAlignment="Left" Opacity="0.5"/>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                        Pin
+                    </TextBlock>
+                </Grid>
+            </Button.Content>
+        </Button>
+        <Button x:Name="bClose" Content="X" Grid.Column="1" HorizontalAlignment="Left" Width="50" Click="bClose_Click"/>
+
+    </Grid>
+</Window>
