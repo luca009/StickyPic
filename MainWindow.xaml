@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StickyPic"
         mc:Ignorable="d"
-        Title="Sticky Picture" Height="270" Width="480" Topmost="True" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" SizeChanged="Window_SizeChanged" MinWidth="320" MouseDown="Window_MouseDown" AllowsTransparency="True" ResizeMode="CanResizeWithGrip" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Icon="icon.png">
+        Title="Sticky Picture" Height="270" Width="480" Topmost="True" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" SizeChanged="Window_SizeChanged" MinWidth="320" MouseDown="Window_MouseDown" AllowsTransparency="True" ResizeMode="CanResizeWithGrip" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Icon="icon.png" Closing="Window_Closing">
     <Grid Background="#FF2C2C2C">
         <Grid x:Name="gridHome" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid>
@@ -25,7 +25,7 @@
                 </ContextMenu>
             </Image.ContextMenu>
         </Image>
-        <Button x:Name="bClose" Content="X" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Width="20" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Height="20" FontSize="20" Padding="0,-6,0,1" Click="bClose_Click">
+        <Button x:Name="bClose" Content="X" HorizontalAlignment="Left" Margin="460,0,0,0" VerticalAlignment="Top" Width="20" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Height="20" FontSize="20" Padding="0,-6,0,1" Click="bClose_Click">
             <Button.Effect>
                 <DropShadowEffect Direction="-15" ShadowDepth="0" BlurRadius="10"/>
             </Button.Effect>

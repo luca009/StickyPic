@@ -33,10 +33,7 @@ namespace StickyPic
         public MainWindow()
         {
             if (Clipboard.ContainsImage())
-            {
-                BitmapSource bitmap = Clipboard.GetImage();
-                previousImageSeed = bitmap.Height * bitmap.Width;
-            }
+                previousImageSeed = Clipboard.GetImage().Height * Clipboard.GetImage().Width;
 
             pollTimer.Tick += pollTimer_Tick;
             pollTimer.Start();
@@ -221,6 +218,18 @@ namespace StickyPic
             {
                 if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk"))
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk");
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (cboxPinSuggestions.IsChecked == true)
+            {
+                Process p = new Process();
+                p.StartInfo.FileName = System.Reflection.Assembly.GetEntryAssembly().Location;
+                p.StartInfo.Arguments = "--launch-hidden";
+                p.Start();
+                p.Dispose();
             }
         }
     }
