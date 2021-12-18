@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -209,6 +210,12 @@ namespace StickyPic
                 shortcut.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 shortcut.Arguments = "--launch-hidden";
                 shortcut.Save();
+
+                Process p = new Process();
+                p.StartInfo.FileName = System.Reflection.Assembly.GetEntryAssembly().Location;
+                p.StartInfo.Arguments = "--launch-hidden";
+                p.Start();
+                p.Dispose();
             }
             else
             {
