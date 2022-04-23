@@ -91,10 +91,7 @@ namespace StickyPic.Controls
         {
             foreach (PaintColorControl paintColorControl in stackpanelColors.Children)
             {
-                if (paintColorControl.Equals(sender))
-                    continue;
-
-                paintColorControl.IsSelected = false;
+                paintColorControl.IsSelected = paintColorControl.Equals(sender);
             }
 
             if (SelectionChanged != null)

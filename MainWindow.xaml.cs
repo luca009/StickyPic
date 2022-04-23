@@ -17,11 +17,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using IWshRuntimeLibrary;
 using File = System.IO.File;
-using SixLabors.ImageSharp;
-using Image = System.Windows.Controls.Image;
-using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
-using Color = System.Windows.Media.Color;
 using System.Windows.Ink;
 
 namespace StickyPic
@@ -395,7 +391,7 @@ namespace StickyPic
                     inkcanvasCanvas.UseCustomCursor = true;
                     break;
                 case Controls.PenType.Eraser:
-                    attributes.StylusTip = StylusTip.Ellipse;
+                    attributes.StylusTip = StylusTip.Rectangle;
                     attributes.IsHighlighter = false;
                     inkcanvasCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
                     inkcanvasCanvas.EraserShape = new RectangleStylusShape(sldBrushSize.Value * 3, sldBrushSize.Value * 3);
@@ -411,6 +407,7 @@ namespace StickyPic
             if (inkcanvasCanvas == null) return;
 
             inkcanvasCanvas.DefaultDrawingAttributes.Height = sldBrushSize.Value;
+            inkcanvasCanvas.EraserShape = new RectangleStylusShape(sldBrushSize.Value * 3, sldBrushSize.Value * 3);
 
             if (!inkcanvasCanvas.DefaultDrawingAttributes.IsHighlighter)
                 inkcanvasCanvas.DefaultDrawingAttributes.Width = sldBrushSize.Value;
