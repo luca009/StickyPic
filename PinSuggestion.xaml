@@ -5,74 +5,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StickyPic"
         mc:Ignorable="d"
-        Title="PinSuggestion" Height="50" Width="190" WindowStyle="None" ResizeMode="NoResize" Opacity="0.9" AllowsTransparency="True" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Topmost="True">
+        Title="PinSuggestion" Height="40" WindowStyle="None" ResizeMode="NoResize" Opacity="0.9" AllowsTransparency="True" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Topmost="True" Width="140">
     <Window.Resources>
-        <Style TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="#272727"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="32"/>
-            <Setter Property="FontFamily" Value="Segoe UI Semilight"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="#4B4B4B" BorderThickness="1">
-                            <Border BorderThickness="{TemplateBinding Padding}">
-                                <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-
-            <Style.Triggers>
-                <EventTrigger RoutedEvent="Button.MouseEnter">
-                    <EventTrigger.Actions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Control.Background).(SolidColorBrush.Color)"
-                                            To="Gray" Duration="0:0:0.25">
-                                    <ColorAnimation.EasingFunction>
-                                        <CircleEase EasingMode="EaseOut"/>
-                                    </ColorAnimation.EasingFunction>
-                                </ColorAnimation>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger.Actions>
-                </EventTrigger>
-
-                <EventTrigger RoutedEvent="Button.MouseLeave">
-                    <EventTrigger.Actions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Control.Background).(SolidColorBrush.Color)"
-                                            To="#272727" Duration="0:0:0.5">
-                                    <ColorAnimation.EasingFunction>
-                                        <QuinticEase EasingMode="EaseOut"/>
-                                    </ColorAnimation.EasingFunction>
-                                </ColorAnimation>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger.Actions>
-                </EventTrigger>
-            </Style.Triggers>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/MonochromeDefaultStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="bPin" HorizontalAlignment="Stretch" Click="bPin_Click">
+        <Button x:Name="bPin" HorizontalAlignment="Stretch" Click="bPin_Click" Width="100" Padding="0,0,0,0">
             <Button.Content>
-                <Grid Width="130">
-                    <Image Source="icon.png" HorizontalAlignment="Left" Opacity="0.5"/>
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                        Pin
-                    </TextBlock>
+                <Grid Background="{x:Null}" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Width}" Margin="0,0,0,0">
+                    <Grid Background="{x:Null}" Margin="2,2,2,2" HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Image Source="/Resources/icon.png" HorizontalAlignment="Left" Margin="1,1,1,1"/>
+                        <Viewbox Margin="2,1.5,2,1.5" Grid.Column="1">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="1,0,0,0" Padding="0,0,0,1.25">
+                                Pin
+                            </TextBlock>
+                        </Viewbox>
+                    </Grid>
                 </Grid>
             </Button.Content>
         </Button>
-        <Button x:Name="bClose" Content="X" Grid.Column="1" HorizontalAlignment="Left" Width="50" Click="bClose_Click"/>
+        <Button x:Name="bClose" Grid.Column="1" HorizontalAlignment="Right" Width="40" Click="bClose_Click">
+            <Button.Content>
+                <Viewbox Margin="6">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="HoloLens MDL2 Assets">
+                            &#xE711;
+                    </TextBlock>
+                </Viewbox>
+            </Button.Content>
+        </Button>
 
     </Grid>
 </Window>

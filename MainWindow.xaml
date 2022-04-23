@@ -1,44 +1,106 @@
-﻿<Window x:Class="StickyPic.MainWindow"
+﻿<Window xmlns:Controls="clr-namespace:StickyPic.Controls"  x:Class="StickyPic.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StickyPic"
         mc:Ignorable="d"
-        Title="Sticky Picture" Height="270" Width="480" Topmost="True" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" SizeChanged="Window_SizeChanged" MinWidth="320" MouseDown="Window_MouseDown" AllowsTransparency="True" ResizeMode="CanResizeWithGrip" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Icon="icon.png" Closing="Window_Closing">
+        Title="Sticky Picture" Height="270" Width="480" Topmost="True" WindowStyle="None" AllowDrop="True" Drop="Window_Drop" SizeChanged="Window_SizeChanged" MinWidth="320" MouseDown="Window_MouseDown" AllowsTransparency="True" ResizeMode="CanResizeWithGrip" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Icon="Resources/icon.png" Closing="Window_Closing">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Icons.xaml"/>
+                <ResourceDictionary Source="Resources/MonochromeDefaultStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <Grid Background="#FF2C2C2C">
-        <Grid x:Name="gridHome" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid>
-                <Image Source="icon.png" Width="69" HorizontalAlignment="Center" Opacity="0.5" Margin="250,0,0,0"/>
-                <TextBlock HorizontalAlignment="Center" Margin="0,0,0,40" TextWrapping="Wrap" Text="Welcome to StickyPic!" VerticalAlignment="Center" Foreground="White" FontSize="22"/>
-                <TextBlock HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" Text="Just drag-n-drop a picture here to open it." VerticalAlignment="Center" Foreground="White" FontSize="16" Width="300"/>
-                <TextBlock HorizontalAlignment="Center" Margin="0,45,122,0" TextWrapping="Wrap" Text="...or" VerticalAlignment="Center" Foreground="White" FontSize="16"/>
-                <Button x:Name="bFromClipboard" Content="Open from Clipboard" HorizontalAlignment="Center" Margin="30,45,0,0" VerticalAlignment="Center" Click="bFromClipboard_Click"/>
-                <CheckBox x:Name="cboxPinSuggestions" Content="Enable Pin Suggestions" HorizontalAlignment="Left" Margin="5,0,0,5" VerticalAlignment="Bottom" Foreground="White" Click="cboxPinSuggestions_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="gridrowTitleBar" Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="gridTitleBar" Background="#FF272727" Height="25">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,0,0">
+                <Button x:Name="bModeSwitch" Content="{StaticResource iconPen}" HorizontalAlignment="Left" Margin="0,0,10,0" FontSize="20" Padding="0,0,0,0" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}" Grid.Column="1" Click="bModeSwitch_Click"/>
+                <Button x:Name="bMinimize" Content="_" HorizontalAlignment="Left" Margin="0,0,0,0" FontSize="20" Padding="0,-10,0,0" Click="bMinimize_Click" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}" Grid.Column="1"/>
+                <Button x:Name="bClose" Content="&#xE711;" HorizontalAlignment="Left" Margin="0,0,0,0" FontSize="16" Padding="0,0,0,0" Click="bClose_Click" FontFamily="HoloLens MDL2 Assets" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}" Grid.Column="1"/>
+            </StackPanel>
+
+            <Grid x:Name="gridToolsView" Background="{x:Null}" Grid.Column="1" Visibility="Visible">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="bBack" Content="&#xE72B;" HorizontalAlignment="Left" FontSize="16" Padding="0,0,0,0" Visibility="Visible" Click="bBack_Click" FontFamily="HoloLens MDL2 Assets" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}"/>
+                <StackPanel Margin="0,2,0,2" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="1">
+                    <Image Source="/Resources/icon.png" />
+                    <TextBlock Text="StickyPic" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" />
+                </StackPanel>
+            </Grid>
+            <Grid x:Name="gridToolsError" Background="#FFE24343" Grid.Column="1" Visibility="Hidden" Panel.ZIndex="5" Margin="0,0,0,0">
+                <TextBlock Text="Unknown error!" VerticalAlignment="Center" Margin="5,0,5,0" FontSize="14" HorizontalAlignment="Stretch" />
+            </Grid>
+            <Grid x:Name="gridToolsPaint" Background="{x:Null}" Grid.Column="1" Visibility="Hidden">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="5,0,10,0">
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource FGColor}" />
+                    <Slider x:Name="sldBrushSize" Margin="0,0,0,0" VerticalAlignment="Center" Minimum="0.05" Maximum="5" LargeChange="0.2" ValueChanged="sldBrushSize_ValueChanged" Value="1" Width="90" />
+                    <Ellipse Width="15" Height="15" Fill="{StaticResource FGColor}" />
+                </StackPanel>
+                <Controls:PaintColorPaletteControl x:Name="palettecontrolPalette" SelectionChanged="palettecontrolPalette_SelectionChanged" Grid.Column="1">
+                    <Controls:PaintColorPaletteControl.ColorPalette>
+                        <Color A="255" R="255"/>
+                        <Color A="255" B="255"/>
+                        <Color A="255" G="255"/>
+                    </Controls:PaintColorPaletteControl.ColorPalette>
+                </Controls:PaintColorPaletteControl>
             </Grid>
         </Grid>
-        <Image x:Name="imageMain" Margin="0" AllowDrop="True">
-            <Image.ContextMenu>
-                <ContextMenu>
-                    <CheckBox x:Name="cboxShowUI" Content="Show UI" IsChecked="True" Click="cboxShowUI_Click"/>
-                    <CheckBox x:Name="cboxEnableTransparency" Content="Make window transparent" Click="cboxEnableTransparency_Click"/>
-                </ContextMenu>
-            </Image.ContextMenu>
-        </Image>
-        <Button x:Name="bClose" Content="X" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Top" Width="20" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Height="20" FontSize="20" Padding="0,-6,0,1" Click="bClose_Click">
-            <Button.Effect>
-                <DropShadowEffect Direction="-15" ShadowDepth="0" BlurRadius="10"/>
-            </Button.Effect>
-        </Button>
-        <Button x:Name="bMinimize" Content="_" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Top" Width="20" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Height="20" FontSize="20" Padding="0,-10,0,0" Click="bMinimize_Click">
-            <Button.Effect>
-                <DropShadowEffect Direction="-15" ShadowDepth="0" BlurRadius="10"/>
-            </Button.Effect>
-        </Button>
-        <Button x:Name="bBack" Content="←" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Width="20" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Height="20" FontSize="20" Padding="0,-6.5,0,0" Visibility="Hidden" Click="bBack_Click">
-            <Button.Effect>
-                <DropShadowEffect Direction="-15" ShadowDepth="0" BlurRadius="10"/>
-            </Button.Effect>
-        </Button>
+        <Grid Grid.Row="1">
+            <Grid x:Name="gridHome" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid>
+                    <!--<Image Source="Resources/icon.png" Width="69" HorizontalAlignment="Center" Opacity="0.5" Margin="250,0,0,0"/>-->
+                    <TextBlock HorizontalAlignment="Center" Margin="0,0,0,40" TextWrapping="Wrap" Text="Welcome to StickyPic!" VerticalAlignment="Center" Foreground="White" FontSize="22"/>
+                    <TextBlock HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" Text="Just drag-n-drop a picture here to open it." VerticalAlignment="Center" Foreground="White" FontSize="16" Width="300"/>
+                    <TextBlock HorizontalAlignment="Center" Margin="0,45,122,0" TextWrapping="Wrap" Text="...or" VerticalAlignment="Center" Foreground="White" FontSize="16"/>
+                    <Button x:Name="bFromClipboard" Content="Open from Clipboard" HorizontalAlignment="Center" Margin="30,45,0,0" VerticalAlignment="Center" Click="bFromClipboard_Click"/>
+                    <CheckBox x:Name="cboxPinSuggestions" Content="Enable Pin Suggestions" HorizontalAlignment="Left" Margin="5,0,0,5" VerticalAlignment="Bottom" Foreground="White" Click="cboxPinSuggestions_Click"/>
+                </Grid>
+            </Grid>
+            <Grid x:Name="gridContent" Background="{x:Null}">
+                <Image x:Name="imageMain" Margin="0" AllowDrop="True">
+                    <Image.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="miCopyImage" Click="miCopyImage_Click">
+                                <MenuItem.Header>
+                                    <TextBlock Text="Copy image" />
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <MenuItem x:Name="miClearDrawings" Click="miClearDrawings_Click">
+                                <MenuItem.Header>
+                                    <TextBlock Text="Clear all drawings" />
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <CheckBox x:Name="cboxShowUI" Content="Show UI" IsChecked="True" Click="cboxShowUI_Click"/>
+                            <CheckBox x:Name="cboxEnableTransparency" Content="Make window transparent" Click="cboxEnableTransparency_Click"/>
+                        </ContextMenu>
+                    </Image.ContextMenu>
+                </Image>
+                <Viewbox x:Name="viewboxInkCanvas" Stretch="UniformToFill" IsHitTestVisible="False">
+                    <InkCanvas x:Name="inkcanvasCanvas" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" Cursor="Pen"/>
+                </Viewbox>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>
