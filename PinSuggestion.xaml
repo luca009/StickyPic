@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StickyPic"
         mc:Ignorable="d"
-        Title="PinSuggestion" Height="40" WindowStyle="None" ResizeMode="NoResize" Opacity="0.9" AllowsTransparency="True" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Topmost="True" Width="140" ShowInTaskbar="False" Icon="/Resources/icon.ico">
+        Title="PinSuggestion" Height="40" WindowStyle="None" ResizeMode="NoResize" Opacity="0.9" AllowsTransparency="True" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave" Topmost="True" Width="140" Icon="/Resources/icon.ico" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
