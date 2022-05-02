@@ -351,8 +351,6 @@ namespace StickyPic
 
         private void bFromClipboard_Click(object sender, RoutedEventArgs e)
         {
-            throw new Exception("test");
-
             if (Clipboard.ContainsImage())
                 OpenImage(imageMain, Clipboard.GetImage()); //Get the image from the Clipboard and open it
             else
