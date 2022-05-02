@@ -84,6 +84,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\Logger.cs" />
     <Compile Include="Controls\PaintColorControl.xaml.cs">
       <DependentUpon>PaintColorControl.xaml</DependentUpon>
     </Compile>

@@ -19,6 +19,7 @@ using IWshRuntimeLibrary;
 using File = System.IO.File;
 using System.Collections.Generic;
 using System.Windows.Ink;
+using StickyPic.Classes;
 
 namespace StickyPic
 {
@@ -37,6 +38,7 @@ namespace StickyPic
         bool windowTransparencyEnabled = false;
         bool processTerminating = false;
         UIMode uiMode;
+        public Logger Logger = new Logger(false);
         DispatcherTimer pollTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(0.5) };
         double previousImageSeed = 0;
 
@@ -49,24 +51,40 @@ namespace StickyPic
 
             InitializeComponent();
 
-            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk"))
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk")) //check if Pin Suggestions are on
                 cboxPinSuggestions.IsChecked = true;
 
-            string[] arguments = GetArguments();
-            if (arguments.Length > 1)
+            string[] arguments = Environment.GetCommandLineArgs();
+            for (int i = 1; i < arguments.Length; i++)
             {
-                if (File.Exists(arguments[1]))
+                if (File.Exists(arguments[i]))
                 {
                     var uri = new Uri(arguments[1]);
                     var bitmap = new BitmapImage(uri);
                     OpenImage(imageMain, bitmap);
                 }
-                else if (arguments[1] == "--launch-hidden")
+                else
                 {
-                    this.Visibility = Visibility.Hidden;
-                    pollTimer.Start();
+                    switch (arguments[i])
+                    {
+                        case "--launch-hidden":
+                            Logger.FlushlessLog("Running as background process.", LogSeverity.Message);
+                            this.Visibility = Visibility.Hidden;
+                            pollTimer.Start();
+                            break;
+                        case "--logging":
+                            Logger.Enabled = true;
+                            Logger.Log("Initialized logging.", LogSeverity.Message);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
+
+            Logger.Log("\"Pin Suggestions are located at " +
+                Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StickyPic Pin Suggestions.lnk""",
+                LogSeverity.Message);
 
             List<Color> colorPalette = new List<Color>
             {
@@ -75,6 +93,8 @@ namespace StickyPic
             palettecontrolPalette.ColorPalette = colorPalette;
 
             SetUIMode(UIMode.Home);
+
+            Logger.Log("Started successfully.", LogSeverity.Message);
         }
 
         private void SetUIMode(UIMode mode)
@@ -171,18 +191,9 @@ namespace StickyPic
             });
         }
 
-        private string[] GetArguments()
-        {
-            string[] arguments = null;
-            arguments = Environment.GetCommandLineArgs(); //Load command line arguments into array
-            if (arguments != null)
-                return arguments;
-            else
-                return null;
-        }
-
         private void OpenImage(Image image, ImageSource bitmap)
         {
+            Logger.Log("Opening image.", LogSeverity.Message);
             try
             {
                 image.Source = bitmap; //Set the image source to the bitmap
@@ -191,8 +202,9 @@ namespace StickyPic
                 this.Height = this.MinHeight; //Set window size according to aspect ratio
                 this.MinWidth = 100f; //Make minimum size smaller
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Log("Failed to open image. Message: " + ex.Message, LogSeverity.Error);
                 ShowErrorGrid();
             }
 
@@ -201,15 +213,29 @@ namespace StickyPic
 
         private void EnableBackgroundProcess()
         {
+            Logger.Log("Enabling background process.", LogSeverity.Message);
+
             Process[] processes = Process.GetProcessesByName("StickyPic");
 
             if (processes.Length <= 0)
+            {
+                Logger.Log("Other StickyPic processes detected.", LogSeverity.Warning);
                 return;
+            }
 
             Process p = new Process();
             p.StartInfo.FileName = System.Reflection.Assembly.GetEntryAssembly().Location;
             p.StartInfo.Arguments = "--launch-hidden";
-            p.Start();
+            if (Logger.Enabled) p.StartInfo.Arguments += " --logging";
+
+            try
+            {
+                p.Start();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed to enable background process. Message: " + ex.Message, LogSeverity.Error);
+            }
             p.Dispose();
         }
 
@@ -223,6 +249,8 @@ namespace StickyPic
         {
             if (GetIfOtherStickyPicInstancesRunning())
             {
+                Logger.Log("Other instances of StickyPic detected. Shutting down.", LogSeverity.Warning);
+
                 processTerminating = true;
                 Application.Current.Shutdown();
             }
@@ -232,6 +260,8 @@ namespace StickyPic
                 BitmapSource image = Clipboard.GetImage();
                 if (image.Width * image.Height != previousImageSeed) //Super hacky way to detect clipboard changes
                 {
+                    Logger.Log("Change in clipboard image detected.", LogSeverity.Message);
+
                     previousImageSeed = image.Width * image.Height;
                     PinSuggestion pinSuggestion = new PinSuggestion();
                     if (pinSuggestion.ShowDialog() == true)
@@ -321,6 +351,8 @@ namespace StickyPic
 
         private void bFromClipboard_Click(object sender, RoutedEventArgs e)
         {
+            throw new Exception("test");
+
             if (Clipboard.ContainsImage())
                 OpenImage(imageMain, Clipboard.GetImage()); //Get the image from the Clipboard and open it
             else
