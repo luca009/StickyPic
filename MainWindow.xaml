@@ -93,6 +93,7 @@
                                 </MenuItem.Header>
                             </MenuItem>
                             <CheckBox x:Name="cboxShowUI" Content="Show UI" IsChecked="True" Click="cboxShowUI_Click"/>
+                            <CheckBox x:Name="cboxDisableAspectRatioLock" Content="Free-size window" Click="cboxDisableAspectRatioLock_Click"/>
                             <CheckBox x:Name="cboxEnableTransparency" Content="Make window transparent" Click="cboxEnableTransparency_Click"/>
                         </ContextMenu>
                     </Image.ContextMenu>

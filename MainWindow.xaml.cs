@@ -36,6 +36,7 @@ namespace StickyPic
         double imageAspectRatio = 0.5625f;
         double maxHeight = SystemParameters.PrimaryScreenHeight;
         bool windowTransparencyEnabled = false;
+        bool windowDisableAspectRatioLocking = false;
         bool processTerminating = false;
         UIMode uiMode;
         public Logger Logger = new Logger(false);
@@ -160,6 +161,11 @@ namespace StickyPic
 
         private void UpdateWindowSize()
         {
+            if (this.WindowState == WindowState.Maximized)
+                this.WindowState = WindowState.Normal; //Prevent maximizing
+
+            if (windowDisableAspectRatioLocking) return;
+
             double newHeight = this.Width * imageAspectRatio;
 
             if (uiMode > 0)
@@ -177,8 +183,6 @@ namespace StickyPic
 
             this.MinHeight = newHeight; //Avoid glitching
             this.Height = newHeight; //Set window size according to aspect ratio
-            if (this.WindowState == WindowState.Maximized)
-                this.WindowState = WindowState.Normal; //Prevent maximizing
         }
 
         private void ShowErrorGrid()
@@ -198,9 +202,7 @@ namespace StickyPic
             {
                 image.Source = bitmap; //Set the image source to the bitmap
                 imageAspectRatio = bitmap.Height / bitmap.Width; //Calculate aspect ratio
-                this.MinHeight = (this.Width * imageAspectRatio);
-                this.Height = this.MinHeight; //Set window size according to aspect ratio
-                this.MinWidth = 100f; //Make minimum size smaller
+                UpdateWindowSize();
             }
             catch (Exception ex)
             {
@@ -462,7 +464,7 @@ namespace StickyPic
 
             //Force rendering using a Viewbox
             Viewbox box = new Viewbox() { Child = grid };
-            box.Measure(new System.Windows.Size(width, height));
+            box.Measure(new Size(width, height));
             box.Arrange(new Rect(new System.Windows.Size(width, height)));
 
             //Render everything and copy it to the clipboard, making sure not to make pin suggestions fire
@@ -486,6 +488,20 @@ namespace StickyPic
         private void miClearDrawings_Click(object sender, RoutedEventArgs e)
         {
             inkcanvasCanvas.Strokes.Clear();
+        }
+
+        private void cboxDisableAspectRatioLock_Click(object sender, RoutedEventArgs e)
+        {
+            windowDisableAspectRatioLocking = cboxDisableAspectRatioLock.IsChecked == true;
+
+            if (windowDisableAspectRatioLocking)
+            {
+                this.MinHeight = 120.0;
+            }
+            else
+            {
+                UpdateWindowSize();
+            }
         }
     }
 }
