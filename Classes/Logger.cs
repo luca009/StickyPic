@@ -16,7 +16,8 @@ namespace StickyPic.Classes
     {
         public bool Enabled { get; set; }
         public string LogPath { get; set; }
-        StreamWriter writer;
+        StreamWriter writer = null;
+        string buffer = "";
 
         public Logger(bool enabled, string path = "auto")
         {
@@ -31,19 +32,24 @@ namespace StickyPic.Classes
             {
                 LogPath = path;
             }
-
-            writer = new StreamWriter(LogPath);
         }
 
         public void FlushlessLog(string message, LogSeverity severity)
         {
-            writer.Write($"[{DateTime.Now.ToString("HH:mm:ss.FFFFF")} - {severity}] {message}\n");
+            buffer += $"[{DateTime.Now.ToString("HH:mm:ss.FFFFF")} - {severity}] {message}\n";
         }
 
         public void Log(string message, LogSeverity severity)
         {
-            if (!Enabled)
-                return;
+            if (!Enabled) return;
+
+            if (writer == null) writer = new StreamWriter(LogPath) { AutoFlush = false };
+
+            if (buffer.Length > 0)
+            {
+                writer.Write(buffer);
+                buffer = "";
+            }
 
             writer.Write($"[{DateTime.Now.ToString("HH:mm:ss.FFFFF")} - {severity}] {message}\n");
             writer.Flush();
